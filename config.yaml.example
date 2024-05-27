@@ -1,0 +1,15 @@
+env: "local" # local, dev, prod
+
+database:
+  address: ""
+  password: ""
+  db: 0
+
+http_server:
+  address: ""
+
+smpp:
+  address: ""
+  user: ""
+  password: ""
+  src_phone_num: ""
