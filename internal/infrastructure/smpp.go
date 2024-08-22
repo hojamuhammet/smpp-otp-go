@@ -6,6 +6,7 @@ import (
 	"os"
 	"smpp-otp/internal/config"
 	"smpp-otp/pkg/lib/logger"
+	utils "smpp-otp/pkg/lib/status"
 	"time"
 
 	"github.com/fiorix/go-smpp/smpp"
@@ -20,7 +21,7 @@ type SMPPClient struct {
 func NewSMPPClient(cfg *config.Config) (*SMPPClient, error) {
 	logger, err := logger.SetupLogger(cfg.Env)
 	if err != nil {
-		slog.Error("failed to set up logger: %v", err)
+		slog.Error("failed to set up logger: %v", utils.Err(err))
 		os.Exit(1)
 	}
 
@@ -42,8 +43,8 @@ func NewSMPPClient(cfg *config.Config) (*SMPPClient, error) {
 			slog.Info("Connected to SMPP server.")
 			break
 		} else {
-			logger.ErrorLogger.Error("Failed to connect:", status.Error())
-			slog.Error("Failed to establish OTP connection:", status.Error())
+			logger.ErrorLogger.Error("Failed to connect:", utils.Err(status.Error()))
+			slog.Error("Failed to establish OTP connection:", utils.Err(status.Error()))
 			logger.InfoLogger.Info("Retrying in 5 seconds...")
 			time.Sleep(5 * time.Second) // Wait for 5 seconds before retrying
 		}
@@ -54,6 +55,7 @@ func NewSMPPClient(cfg *config.Config) (*SMPPClient, error) {
 
 func (c *SMPPClient) SendSMS(cfg *config.Config, dest, text string) error {
 	params := &smpp.ShortMessage{
+		Src:      cfg.Src_Phone_Number,
 		Dst:      dest,
 		Text:     pdutext.Raw(text),
 		Register: 0, // No delivery receipt
