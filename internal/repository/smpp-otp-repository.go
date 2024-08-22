@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"smpp-otp/pkg/lib/logger"
-	utils "smpp-otp/pkg/lib/status"
+	"smpp-otp/pkg/lib/utils"
 	"time"
 
 	"github.com/go-redis/redis"

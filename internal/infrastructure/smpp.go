@@ -6,7 +6,7 @@ import (
 	"os"
 	"smpp-otp/internal/config"
 	"smpp-otp/pkg/lib/logger"
-	utils "smpp-otp/pkg/lib/status"
+	"smpp-otp/pkg/lib/utils"
 	"time"
 
 	"github.com/fiorix/go-smpp/smpp"
