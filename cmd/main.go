@@ -12,6 +12,7 @@ import (
 	"smpp-otp/internal/service"
 	db "smpp-otp/pkg/database"
 	"smpp-otp/pkg/lib/logger"
+	"smpp-otp/pkg/lib/utils"
 	"syscall"
 )
 
@@ -20,22 +21,21 @@ func main() {
 
 	logger, err := logger.SetupLogger(cfg.Env)
 	if err != nil {
-		slog.Error("failed to set up logger: %v", err)
+		slog.Error("failed to set up logger: %v", utils.Err(err))
 		os.Exit(1)
 	}
 
 	logger.InfoLogger.Info("Server is up and running")
-	slog.Info("Server is up and running")
 
 	database, err := db.InitDB(cfg)
 	if err != nil {
-		logger.ErrorLogger.Error("failed to initialize database: %v", err)
+		logger.ErrorLogger.Error("failed to initialize database: %v", utils.Err(err))
 		os.Exit(1)
 	}
 
 	smppClient, err := smpp.NewSMPPClient(cfg)
 	if err != nil {
-		logger.ErrorLogger.Error("failed to initialize SMPP client: %v", err)
+		logger.ErrorLogger.Error("failed to initialize SMPP client: %v", utils.Err(err))
 		os.Exit(1)
 	}
 
@@ -51,13 +51,13 @@ func main() {
 		<-stop
 		logger.InfoLogger.Info("Shutting down the server gracefully...")
 		if err := database.Close(); err != nil {
-			logger.ErrorLogger.Error("Error closing database:", err)
+			logger.ErrorLogger.Error("Error closing database:", utils.Err(err))
 		}
 		os.Exit(0)
 	}()
 
 	err = http.ListenAndServe(cfg.HTTPServer.Address, r)
 	if err != nil {
-		logger.ErrorLogger.Error("Server failed to start:", err)
+		logger.ErrorLogger.Error("Server failed to start:", utils.Err(err))
 	}
 }
