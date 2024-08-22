@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"smpp-otp/pkg/lib/logger"
+	utils "smpp-otp/pkg/lib/status"
 	"time"
 
 	"github.com/go-redis/redis"
@@ -30,7 +31,7 @@ func GenerateOTP() string {
 func (r *OTPRepository) SaveOTP(phoneNumber string, otp string) error {
 	err := r.Client.Set(phoneNumber, otp, 5*time.Minute).Err()
 	if err != nil {
-		r.logger.ErrorLogger.Error("Error setting up values into redis: %v", err)
+		r.logger.ErrorLogger.Error("Error setting up values into redis: %v", utils.Err(err))
 		return err
 	}
 	return nil

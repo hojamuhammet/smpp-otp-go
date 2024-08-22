@@ -7,6 +7,7 @@ import (
 	smpp "smpp-otp/internal/infrastructure/interfaces"
 	repository "smpp-otp/internal/repository/interfaces"
 	"smpp-otp/pkg/lib/logger"
+	"smpp-otp/pkg/lib/utils"
 	"time"
 )
 
@@ -31,13 +32,13 @@ func (s *OTPService) SaveAndSendOTP(phoneNumber string) error {
 	otp := GenerateOTP()
 	err := s.repository.SaveOTP(phoneNumber, otp)
 	if err != nil {
-		s.logger.ErrorLogger.Error("Error saving OTP to repository: %v", err)
+		s.logger.ErrorLogger.Error("Error saving OTP to repository: %v", utils.Err(err))
 		return err
 	}
 
 	err = s.smppClient.SendSMS(s.cfg, phoneNumber, otp)
 	if err != nil {
-		s.logger.ErrorLogger.Error("Error sending OTP via SMS: %v", err)
+		s.logger.ErrorLogger.Error("Error sending OTP via SMS: %v", utils.Err(err))
 		return err
 	}
 
@@ -50,7 +51,7 @@ func (s *OTPService) ValidateOTP(phoneNumber string, otp string) error {
 		if err.Error() == "redis: nil" {
 			return fmt.Errorf("OTP not found or expired")
 		}
-		s.logger.ErrorLogger.Error("Error retrieving OTP from repository: %v", err)
+		s.logger.ErrorLogger.Error("Error retrieving OTP from repository: %v", utils.Err(err))
 		return err
 	}
 
