@@ -1,0 +1,1 @@
+Gets phone number, generates and sends otp, records to redis to compare during validation
